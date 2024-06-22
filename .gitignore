@@ -1,0 +1,36 @@
+# Dependency directories
+/node_modules
+/logs
+# Build artifacts
+/build
+/dist
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Log files
+*.log
+
+# IDE and editor files
+.idea/
+.vscode/
+
+# Mac specific
+.DS_Store
+
+# npm debugging log
+npm-debug.log*
+
+# Yarn integrity file
+.yarn-integrity
+
+# TypeScript build cache
+*.tsbuildinfo
+
+# Jest coverage
+coverage/
+
+# Custom ignore for specific files or directories
+# Add your custom files/directories here if needed
