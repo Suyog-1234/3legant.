@@ -83,7 +83,7 @@ export async function loginUser(req: Request, res: Response) {
 
 export const refresh = (req: Request, res: Response) => {
     const cookies = req.cookies
-    if (!cookies?.jwt) return res.status(401).json({ message: 'Unauthorized' })
+    if (!cookies?.jwt) return res.status(403).json({ message: 'Forbidden' })
     const refreshToken = cookies.jwt
     jwt.verify(
         refreshToken,
@@ -93,7 +93,7 @@ export const refresh = (req: Request, res: Response) => {
             const foundUser = await User.findById(decoded.id).exec()
             if (!foundUser) return res.status(401).json({ message: 'Unauthorized' })
             const accessToken = generateAccessToken(foundUser._id)
-            res.json({ accessToken })
+            return res.json({ accessToken })
         }
     )
 }

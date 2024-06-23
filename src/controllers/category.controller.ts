@@ -96,12 +96,70 @@ export async function deleteCategory(req: Request, res: Response) {
 
 export async function getAllCategories(req: Request, res: Response) {
   try {
-      const categories = await Category.find().lean().exec();
-      return res.status(200).json({data:categories});
+    const categories = await Category.aggregate([
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: 'category',
+          as: 'products'
+        }
+      },
+      {
+        $unwind: {
+          path: '$products',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'products.category',
+          foreignField: '_id',
+          as: 'products.category'
+        }
+      },
+      {
+        $unwind: {
+          path: '$products.category',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          products: { $push: '$products' },
+          productsCount: { $sum:1}
+        }
+      },
+      {
+        $project: {
+            _id: 1,
+            name: 1,
+            products: {
+                _id: 1,
+                name: 1,
+                description: 1,
+                price: 1,
+                images: 1,
+                videos: 1,
+                availability: 1,
+                color: 1,
+                sizes: 1,
+                brand: 1,
+                createdAt: 1,
+                updatedAt: 1,
+            },
+            productsCount:1
+        }
+    }
+    ]);
+    return res.status(200).json({ data: categories });
   } catch (error) {
-      if (error instanceof z.ZodError) {
-          return res.status(400).json({ message: error.issues[0].message });
-      }
-      return res.status(500).json({ message: "Internal server error" });
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ message: error.issues[0].message });
+    }
+    return res.status(500).json({ message: "Internal server error" });
   }
 }

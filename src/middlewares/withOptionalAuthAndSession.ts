@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 
-async function withAuthAndSession(req: Request, res: Response, next: NextFunction) {
+async function withOptionalAuthAndSession(req: Request, res: Response, next: NextFunction) {
     try {
         const authHeader = req.headers.authorization || req.headers.Authorization as string;
         let userId: string | undefined;
@@ -23,9 +23,9 @@ async function withAuthAndSession(req: Request, res: Response, next: NextFunctio
         req.sessionId = sessionId;
         next();
     } catch (error) {
-        console.error("Error in withAuthAndSession middleware:", error);
+        console.error("Error in withOptionalAuthAndSession middleware:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
 }
 
-export default withAuthAndSession;
+export default withOptionalAuthAndSession;
